@@ -13,13 +13,9 @@ function App() {
     refetchInterval: 300 * 1000
   })
 
-
   const isLoading = isLoadingProfile || isLoadingStats;
   const isError = isErrorProfile || isErrorStats;
   const error = [errorProfile, errorStats];
-
-  console.log('statsInfo', stats);
-  console.log('profileInfo', profile);
 
 if (isLoading) {
   return <div>Loading...</div>;
@@ -37,6 +33,7 @@ if (isError) {
   return (
     <div className="App">
       <Plot 
+        className='Chart'
         data={[{
           y: [stats?.timelineStats?.timeline[0].sentimentAsCategories.negativeExternalTweets, stats?.timelineStats?.timeline[0].sentimentAsCategories.neutralExternalTweets,stats?.timelineStats?.timeline[0].sentimentAsCategories.positiveExternalTweets ],
           x: ['Negative', 'Neutral', 'Positive'],
@@ -45,8 +42,8 @@ if (isError) {
         }]}
         layout={ {width: 500, height: 400, title: 'Sentiment Category Timeline'} }
       />
-
       <Plot 
+        className='Chart'
         data={[{
           y: [stats?.timelineStats?.timeline[0].meanSentimentExternal, stats?.timelineStats?.timeline[1].meanSentimentExternal ],
           x: [stats?.timelineStats?.timeline[0].meanSentimentExternal, stats?.timelineStats?.timeline[1].meanSentimentExternal],
