@@ -1,33 +1,65 @@
+import { useQuery } from "@tanstack/react-query";
 import React, { useState } from "react";
 import './App.css';
 import Charts from './Components/Charts/Charts';
-import { useQueryStatsHook, useQueryTwitterHook } from "./CustomHooks/useQueryHook";
 import { GetStatsInfo } from "./data/api";
 
 function App() {
-  const [buttonSelected, setButtonSelected] = useState("0")
-  const { data: stats, isLoadingStats, isErrorStats, errorStats } = useQueryStatsHook();
-  const { data: twitter, isLoadingtwitter, isErrortwitter, errortwitter } = useQueryTwitterHook();
-  var [buttonFlavors, setbuttonFlavor] = useState([{
+  const { data: stats, isLoadingStats, isErrorStats, errorStats } = useQuery({ queryKey: ["stats"], queryFn: GetStatsInfo, refetchInterval: 300000 }); //Custom Hooks
+
+  // Charts Button
+  var [chatButtons, setchatButtons] = useState([{
     id: 0,
-    title: 'Followers',
-    isSelected: false
+    title: 'Twitter',
+    isSelected: true,
+    childButtons: [{
+      id: 0,
+      title: 'Followers',
+      isSelected: false,
+      chartType: 'bar'
+    },
+    {
+      id: 1,
+      title: 'Sentiment',
+      isSelected: false,
+      chartType: 'line'
+    }]
   },
   {
     id: 1,
-    title: 'Sentiment',
-    isSelected: false
+    title: 'Instagram',
+    isSelected: false,
+    childButtons: [{
+      id: 0,
+      title: 'Followers',
+      isSelected: false,
+      chartType: 'treemap'
+    },
+    {
+      id: 1,
+      title: 'Sentiment',
+      isSelected: false,
+      chartType: 'bubble'
+    },
+    {
+      id: 2,
+      title: 'Sentiment - 1',
+      isSelected: false,
+      chartType: 'bubble'
+    }]
   },
   ]);
 
-  const isLoading = isLoadingtwitter || isLoadingStats;
-  const isError = isErrortwitter || isErrorStats;
-  const error = [errorStats, errortwitter];
+  const isLoading = isLoadingStats; // Loading Handlling
+  const isError = isErrorStats; // Error Handlling
+  const error = [errorStats]; // Error Message Handlling
 
+  // If Query Loading
   if (isLoading) {
     return <div>Loading...</div>;
   }
 
+  // If Query Have error
   if (isError) {
     return (
       <span>
@@ -36,11 +68,32 @@ function App() {
       </span>
     );
   }
+  console.log('>>', stats);
 
+  // Select Flavor Buttons
   const selectFlavors = (item, index) => {
-    const flovorsArray = [...buttonFlavors];
-    flovorsArray[index].isSelected = !flovorsArray[index].isSelected;
-    setbuttonFlavor(flovorsArray)
+    const flovorsArray = [...chatButtons];
+    for (let i = 0; i < chatButtons.length; i++) {
+      if (flovorsArray[i].isSelected) {
+        flovorsArray[i].childButtons[index].isSelected = !flovorsArray[i].childButtons[index].isSelected;
+      }
+    }
+    setchatButtons(flovorsArray)
+  }
+
+  // Select Social Media Buttons
+  const selectSocialMedial = (item, index) => {
+    const socialMediaArray = [...chatButtons];
+    socialMediaArray[index].isSelected = !socialMediaArray[index].isSelected;
+    for (let i = 0; i < socialMediaArray.length; i++) {
+      if (socialMediaArray[index].id === i) {
+        socialMediaArray[i].isSelected = true;
+        setchatButtons(socialMediaArray)
+      } else {
+        socialMediaArray[i].isSelected = false;
+        setchatButtons(socialMediaArray)
+      }
+    }
   }
 
   return (
@@ -48,32 +101,25 @@ function App() {
       {/* Main Container */}
       <div class="container">
         <div class="row justify-content-between mt-5">
-          {/* Top Buttons */}
-          <div class="col-md-4">
-            {buttonSelected === "0" ?
-              <button class='btn btn-danger w-100'>Twitter (Selected)</button>
-              :
-              <button onClick={() => setButtonSelected('0')} class='btn btn-dark w-100'>Twitter</button>
-            }
-          </div>
-          <div class="col-md-4">
-            {buttonSelected === "1" ?
-              <button class='btn btn-danger w-100'>Instagram (Selected)</button>
-              :
-              <button onClick={() => setButtonSelected('1')} class='btn btn-dark w-100'>Instagram</button>
-            }
-          </div>
+          {
+            chatButtons.map((item, index) => <>
+              <div class="col-md-4">
+                <button onClick={() => selectSocialMedial(item, index)} class={item.isSelected === true ? 'btn btn-danger w-100' : 'btn btn-dark w-100'}>{item.title}</button>
+              </div>
+            </>)
+          }
         </div>
         <div class="row justify-content-between mt-5">
           {
-            buttonFlavors.map((item, index) =>
-              <>
-                {/* Top Buttons */}
-                <div onClick={() => selectFlavors(item, index)} class="col-md-4">
-                  <button class={item.isSelected === true ? 'btn btn-info w-100' : 'btn btn-red w-100'}>{item.title}</button>
-                </div>
-              </>
-            )
+            chatButtons.map((item, index) => <>
+              {item.isSelected === true ? chatButtons[index].childButtons.map((item, index) =>
+                <>
+                  <div onClick={() => selectFlavors(item, index)} class={`col-md-3`}>
+                    <button class={item.isSelected === true ? 'btn btn-info w-100' : 'btn btn-red w-100'}>{item.title}</button>
+                  </div>
+                </>
+              ) : null}
+            </>)
           }
           <div class="col-md-2">
             <button onClick={() => GetStatsInfo()} class='btn btn-warning w-100'>Refresh Charts </button>
@@ -83,33 +129,17 @@ function App() {
       {/* Chart Section */}
       <div className="App">
         {
-          buttonSelected === "0" && stats != undefined ?
-            <>
-              {
-                buttonFlavors[0].isSelected === true ?
-                  <Charts chartType="bar" Selected={buttonSelected} stat={stats}></Charts>
-                  : null
-              }
-              {
-                buttonFlavors[1].isSelected === true ?
-                  <Charts chartType="line" Selected={buttonSelected} stat={stats}></Charts>
-                  : null
-              }
-            </>
-            :
-            <>
-              {
-                buttonFlavors[0].isSelected === true ?
-                  <Charts chartType="treemap" Selected={buttonSelected} stat={stats}></Charts>
-                  : null
-              }
-              {
-                buttonFlavors[1].isSelected === true ?
-                  <Charts chartType="bubble" Selected={buttonSelected} stat={stats}></Charts>
-                  : null
-              }
-
-            </>
+          chatButtons.map((item, index) => <>
+            {item.isSelected === true ? chatButtons[index].childButtons.map((item, index) =>
+              <>
+                {item.isSelected === true ?
+                  <Charts chartType={item.chartType} stat={stats}></Charts>
+                  :
+                  null
+                }
+              </>
+            ) : null}
+          </>)
         }
       </div>
     </React.Fragment>

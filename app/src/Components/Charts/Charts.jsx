@@ -1,7 +1,8 @@
 import React from "react";
 import Plot from "react-plotly.js";
 
-const charts = ({ stat, Selected, data, chartType }) => {
+const charts = ({ stat, data, chartType }) => {
+  console.log("chartType:", chartType);
   var trace1 = {
     x: [1, 2, 3, 4],
     y: [10, 11, 12, 13],
@@ -53,16 +54,13 @@ const charts = ({ stat, Selected, data, chartType }) => {
   const plotLayoutStyle = {
     width: 500,
     height: 500,
-    title:
-      Selected === "1"
-        ? "Sentiment Category Timeline - 1"
-        : "Average Sentiment Timeline - 1",
+    title: "Average Sentiment Timeline - 1",
   };
-
+  // Left to Call API and GET values in Chat.
   var values = ["11", "12", "13", "14", "15", "20", "30"];
   var labels = ["A1", "A2", "A3", "A4", "A5", "B1", "B2"];
   var parents = ["", "A1", "A2", "A3", "A4", "", "B1"];
-
+  // console.log("stat?.stats?.twitter::", stat?.stats?.twitter);
   return (
     <div>
       <Plot
@@ -71,14 +69,7 @@ const charts = ({ stat, Selected, data, chartType }) => {
           chartType === "bar"
             ? [
                 {
-                  y: [
-                    stat.stats.twitter?.timelineStats?.timeline[0]
-                      .sentimentAsCategories.negativeExternalTweets + 10,
-                    stat.stats.twitter?.timelineStats?.timeline[0]
-                      .sentimentAsCategories.neutralExternalTweets,
-                    stat.stats.twitter?.timelineStats?.timeline[0]
-                      .sentimentAsCategories.positiveExternalTweets,
-                  ],
+                  y: [10, 25, 30],
                   x: ["Negative", "Neutral", "Positive"],
                   type: chartType,
                   marker: { color: ["#E03C32", "#FFD301", "7BB662"] },
@@ -87,18 +78,8 @@ const charts = ({ stat, Selected, data, chartType }) => {
             : chartType === "line"
             ? [
                 {
-                  y: [
-                    stat.stats.twitter?.timelineStats?.timeline[0]
-                      .meanSentimentExternal,
-                    stat.stats.twitter?.timelineStats?.timeline[0]
-                      .meanSubjectivity,
-                  ],
-                  x: [
-                    stat.stats.twitter?.timelineStats?.timeline[0]
-                      .meanSentimentExternal,
-                    stat.stats.twitter?.timelineStats?.timeline[0]
-                      .meanSubjectivity,
-                  ],
+                  y: [20, 30],
+                  x: [20, 30],
                   type: chartType,
                   mode: "lines",
                 },
