@@ -95,6 +95,58 @@ function App() {
     }
   }
 
+  var trace1 = {
+    x: [1, 2, 3, 4],
+    y: [10, 11, 12, 13],
+    mode: "markers",
+    marker: {
+      color: [
+        "hsl(0,100,40)",
+        "hsl(33,100,40)",
+        "hsl(66,100,40)",
+        "hsl(99,100,40)",
+      ],
+      size: [12, 22, 32, 42],
+      opacity: [0.6, 0.7, 0.8, 0.9],
+    },
+    type: "scatter",
+  };
+
+  var trace2 = {
+    x: [1, 2, 3, 4],
+    y: [11, 12, 13, 14],
+    mode: "markers",
+    marker: {
+      color: "rgb(31, 119, 180)",
+      size: 18,
+      symbol: ["circle", "square", "diamond", "cross"],
+    },
+    type: "scatter",
+  };
+
+  var trace3 = {
+    x: [1, 2, 3, 4],
+    y: [12, 13, 14, 15],
+    mode: "markers",
+    marker: {
+      size: 18,
+      line: {
+        color: [
+          "rgb(120,120,120)",
+          "rgb(120,120,120)",
+          "red",
+          "rgb(120,120,120)",
+        ],
+        width: [2, 2, 6, 2],
+      },
+    },
+    type: "scatter",
+  };
+
+  var values = ["11", "12", "13", "14", "15", "20", "30"];
+  var labels = ["A1", "A2", "A3", "A4", "A5", "B1", "B2"];
+  var parents = ["", "A1", "A2", "A3", "A4", "", "B1"];
+
   return (
     <React.Fragment>
       {/* Main Container */}
@@ -132,7 +184,28 @@ function App() {
             {item.isSelected === true ? chatButtons[index].childButtons.map((item, index) =>
               <>
                 {item.isSelected === true ?
-                  <Charts chartType={item.chartType} stat={stats}></Charts>
+                  <Charts data={item.chartType === "bar" ? [
+                    {
+                      y: [10, 25, 30],
+                      x: ["Negative", "Neutral", "Positive"],
+                      type: item.chartType,
+                      marker: { color: ["#E03C32", "#FFD301", "7BB662"] },
+                    },
+                  ] : item.chartType === "line" ? [
+                    {
+                      y: [20, 30],
+                      x: [20, 30],
+                      type: item.chartType,
+                      mode: "lines",
+                    },
+                  ] : item.chartType === "treemap" ? [
+                    {
+                      type: item.chartType,
+                      values: values,
+                      labels: labels,
+                      parents: parents,
+                    },
+                  ] : item.chartType === "bubble" ? [trace1, trace2, trace3] : null} stat={stats}></Charts>
                   :
                   null
                 }
