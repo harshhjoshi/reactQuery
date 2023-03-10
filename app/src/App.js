@@ -23,7 +23,7 @@ function App() {
       title: 'Sentiment',
       isSelected: false,
       chartType: 'line'
-    }]
+    },]
   },
   {
     id: 1,
@@ -38,12 +38,6 @@ function App() {
     {
       id: 1,
       title: 'Sentiment',
-      isSelected: false,
-      chartType: 'bubble'
-    },
-    {
-      id: 2,
-      title: 'Sentiment - 1',
       isSelected: false,
       chartType: 'bubble'
     }]
@@ -155,7 +149,7 @@ function App() {
           {
             chatButtons.map((item, index) => <>
               <div class="col-md-4">
-                <button onClick={() => selectSocialMedial(item, index)} class={item.isSelected === true ? 'btn btn-danger w-100' : 'btn btn-dark w-100'}>{item.title}</button>
+                <button onClick={() => selectSocialMedial(item, index)} class={item.isSelected === true ? 'btn btn-primary w-100' : 'btn btn-outline-dark w-100'}>{item.title}</button>
               </div>
             </>)
           }
@@ -165,8 +159,8 @@ function App() {
             chatButtons.map((item, index) => <>
               {item.isSelected === true ? chatButtons[index].childButtons.map((item, index) =>
                 <>
-                  <div onClick={() => selectFlavors(item, index)} class={`col-md-3`}>
-                    <button class={item.isSelected === true ? 'btn btn-info w-100' : 'btn btn-red w-100'}>{item.title}</button>
+                  <div onClick={() => selectFlavors(item, index)} class={`col-md-2`}>
+                    <button class={item.isSelected === true ? 'btn btn-info w-100' : 'btn btn-outline-secondary w-100'}>{item.title}</button>
                   </div>
                 </>
               ) : null}
@@ -176,44 +170,46 @@ function App() {
             <button onClick={() => TwitterAPI()} class='btn btn-warning w-100'>Refresh Charts </button>
           </div>
         </div>
+
+        {/* Chart Section */}
+        <div className="App">
+          {
+            chatButtons.map((item, index) => <>
+              {item.isSelected === true ? chatButtons[index].childButtons.map((item, index) =>
+                <>
+                  {item.isSelected === true ?
+                    <Charts data={item.chartType === "bar" ? [
+                      {
+                        y: [10, 25, 30],
+                        x: ["Negative", "Neutral", "Positive"],
+                        type: item.chartType,
+                        marker: { color: ["#E03C32", "#FFD301", "7BB662"] },
+                      },
+                    ] : item.chartType === "line" ? [
+                      {
+                        y: [20, 30],
+                        x: [20, 30],
+                        type: item.chartType,
+                        mode: "lines",
+                      },
+                    ] : item.chartType === "treemap" ? [
+                      {
+                        type: item.chartType,
+                        values: values,
+                        labels: labels,
+                        parents: parents,
+                      },
+                    ] : item.chartType === "bubble" ? [trace1, trace2, trace3] : null} stat={stats}></Charts>
+                    :
+                    null
+                  }
+                </>
+              ) : null}
+            </>)
+          }
+        </div>
       </div>
-      {/* Chart Section */}
-      <div className="App">
-        {
-          chatButtons.map((item, index) => <>
-            {item.isSelected === true ? chatButtons[index].childButtons.map((item, index) =>
-              <>
-                {item.isSelected === true ?
-                  <Charts data={item.chartType === "bar" ? [
-                    {
-                      y: [10, 25, 30],
-                      x: ["Negative", "Neutral", "Positive"],
-                      type: item.chartType,
-                      marker: { color: ["#E03C32", "#FFD301", "7BB662"] },
-                    },
-                  ] : item.chartType === "line" ? [
-                    {
-                      y: [20, 30],
-                      x: [20, 30],
-                      type: item.chartType,
-                      mode: "lines",
-                    },
-                  ] : item.chartType === "treemap" ? [
-                    {
-                      type: item.chartType,
-                      values: values,
-                      labels: labels,
-                      parents: parents,
-                    },
-                  ] : item.chartType === "bubble" ? [trace1, trace2, trace3] : null} stat={stats}></Charts>
-                  :
-                  null
-                }
-              </>
-            ) : null}
-          </>)
-        }
-      </div>
+
     </React.Fragment>
   );
 }
