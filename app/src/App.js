@@ -1,11 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import React, { useState } from "react";
+import { TwitterAPI } from "../src/data/service";
 import './App.css';
 import Charts from './Components/Charts/Charts';
-import { GetStatsInfo } from "./data/api";
 
 function App() {
-  const { data: stats, isLoadingStats, isErrorStats, errorStats } = useQuery({ queryKey: ["stats"], queryFn: GetStatsInfo, refetchInterval: 300000 }); //Custom Hooks
+  const { data: stats, isLoadingStats, isErrorStats, errorStats } = useQuery({ queryKey: ["stats"], queryFn: TwitterAPI, refetchInterval: 300000 }); //Custom Hooks
 
   // Charts Button
   var [chatButtons, setchatButtons] = useState([{
@@ -68,7 +68,6 @@ function App() {
       </span>
     );
   }
-  console.log('>>', stats);
 
   // Select Flavor Buttons
   const selectFlavors = (item, index) => {
@@ -122,7 +121,7 @@ function App() {
             </>)
           }
           <div class="col-md-2">
-            <button onClick={() => GetStatsInfo()} class='btn btn-warning w-100'>Refresh Charts </button>
+            <button onClick={() => TwitterAPI()} class='btn btn-warning w-100'>Refresh Charts </button>
           </div>
         </div>
       </div>
